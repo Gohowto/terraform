@@ -2,6 +2,10 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name = var.domain_name
     origin_id   = var.origin_id
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.example.cloudfront_access_identity_path
+    }
   }
 
   enabled             = var.enabled
@@ -43,4 +47,16 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+}
+
+resource "aws_cloudfront_origin_access_control" "default" {
+  name                              = "example"
+  description                       = "Example Policy"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+resource "aws_cloudfront_origin_access_identity" "example" {
+  comment = "Some comment"
 }
